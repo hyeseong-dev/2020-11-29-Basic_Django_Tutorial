@@ -1,5 +1,5 @@
 from django import forms
-from .models import Fcuser
+from .models import MyUser
 from django.contrib.auth.hashers import check_password
 
 
@@ -22,12 +22,12 @@ class LoginForm(forms.Form):
 
         if username and password:
             try:
-                fcuser = Fcuser.objects.get(username=username)
-            except Fcuser.DoesNotExist:
+                myuser = MyUser.objects.get(username=username)
+            except MyUser.DoesNotExist:
                 self.add_error('username', '아이디가 없습니다')
                 return
 
-            if not check_password(password, fcuser.password):
+            if not check_password(password, myuser.password):
                 self.add_error('password', '비밀번호를 틀렸습니다')
             else:
-                self.user_id = fcuser.id
+                self.user_id = myuser.id

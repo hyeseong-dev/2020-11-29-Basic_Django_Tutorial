@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.http import Http404
-from fcuser.models import Fcuser
+from myuser.models import MyUser
 from tag.models import Tag
 from .models import Board
 from .forms import BoardForm
@@ -20,20 +20,20 @@ def board_detail(request, pk):
 
 def board_write(request):
     if not request.session.get('user'):
-        return redirect('/fcuser/login/')
+        return redirect('/myuser/login/')
 
     if request.method == 'POST':
         form = BoardForm(request.POST)
         if form.is_valid():
             user_id = request.session.get('user')
-            fcuser = Fcuser.objects.get(pk=user_id)
+            myuser = MyUser.objects.get(pk=user_id)
 
             tags = form.cleaned_data['tags'].split(',')
 
             board = Board()
             board.title = form.cleaned_data['title']
             board.contents = form.cleaned_data['contents']
-            board.writer = fcuser
+            board.writer = myuser
             board.save()
 
             for tag in tags:
@@ -53,7 +53,7 @@ def board_write(request):
 def board_list(request):
     all_boards = Board.objects.all().order_by('-id')
     page = int(request.GET.get('p', 1))
-    paginator = Paginator(all_boards, 3)
+    paginator = Paginator(all_boards, 10)
 
     boards = paginator.get_page(page)
     return render(request, 'board_list.html', {'boards': boards})
